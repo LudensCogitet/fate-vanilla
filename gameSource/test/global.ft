@@ -1,0 +1,30 @@
+#settings
+	turns happen on input
+	turns happen every 2 commands
+
+	keyword list
+		use
+		examine
+		look around
+		{inventory|check inventory}
+		{north|go north}
+		{south|go south}
+		{east|go east}
+		{west|go west}
+
+#player is in pedestal_room
+
+#anywhere
+	do
+		if #command is `check inventory`
+			list what #player has saying `You have #thing.`
+		if $#turn$ remainder of division by $time_cycle_length$ is 0
+			if $time_of_day$ is day
+				do
+					set time_of_day to night
+					say `<p>The morning sun has vanquished the horrible night.<p>`
+				else
+					if $time_of_day$ is night
+						do
+							set time_of_day to day
+							say `<p>What a horrible night to have a curse.<p>`

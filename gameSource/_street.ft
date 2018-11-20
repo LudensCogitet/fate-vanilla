@@ -1,0 +1,127 @@
+variable named _street_num_turns is 0
+variable named _street_entered_lawn is false
+
+function named _street_check_dead
+	set _street_num_turns to $_street_num_turns$ plus 1
+	if $_street_num_turns$ is 3
+		say `<p> The wind is beginning to howl. <p>`
+	if $_street_num_turns$ is 6
+		say `<p> You sense It drawing near. <p>`
+	if $_street_num_turns$ is 9
+		say `<p> "God save me... It's here..." <p>`
+	if $_street_num_turns$ is 10
+		do
+			#clear
+			travel to _street_death #interrupt
+
+place named _street looks like `{A Windy Street|_street}`
+	do
+		if #command is not #enter
+			do _street_check_dead
+		if #command is `look around`
+			or #command is #enter
+			then
+				say
+					`Imposing houses, most with darkened windows, stand back from the pavement to the right and left of the empty street. <p>`
+					`You see {!!a golden plaque|_right_hand_plaque} hanging from the garden wall next to the {!!gate of the house|_right_hand_gate} to the {!!east|go east}. <p>`
+					`You see {!!another plaque|_left_hand_plaque} similarly placed next to {!!the gate|_left_hand_gate} across the street, to the {!!west|go west}. <p>`
+					`The street continues {!!north|go north}, into the dark.`
+		if #command is `examine _left_hand_plaque`
+			`The plaque reads: "380 Mayfair Street"`
+		if #command is `examine _right_hand_plaque`
+			`The plaque reads: "381 Mayfair Street"`
+		if #command is `go west`
+			or #command is `go east`
+			or #command is `use _left_hand_gate`
+			or #command is `use _right_hand_gate`
+			or #command is `examine _left_hand_gate`
+			or #command is `examine _right_hand_gate`
+			then
+				`The gate is locked.`
+		if #command is `go north`
+			travel to _street_2
+
+place named _street_2 looks like `{Further Down A Windy Street|_street_2}`
+	do
+		if #command is not #enter
+			do _street_check_dead
+		if #command is `look around`
+			or #command is #enter
+			then
+				say
+					`Two more houses loom out of the darkness of the lonely street. <p>`
+					`You see {!!an address plaque|_right_hand_plaque} by {!!a gate|_right_hand_gate} to the {!!east|go east}. <p>`
+					`And {!!another plaque|_left_hand_plaque} near {!!the gate|_left_hand_gate} to the {!!west|go west}. <p>`
+					`The street continues {!!north|go north}.`
+		if #command is `examine _left_hand_plaque`
+			`The plaque reads: "382 Mayfair Street"`
+		if #command is `examine _right_hand_plaque`
+			`The plaque reads: "383 Mayfair Street"`
+		if #command is `go west`
+			or #command is `go east`
+			or #command is `use _left_hand_gate`
+			or #command is `use _right_hand_gate`
+			or #command is `examine _left_hand_gate`
+			or #command is `examine _right_hand_gate`
+			then
+				`The gate is locked.`
+		if #command is `go north`
+			travel to _street_3
+		if #command is `go south`
+			travel to _street
+
+place named _street_3 looks like `{The End Of A Windy Street|_street_3}`
+	do
+		if #command is not #enter
+			do _street_check_dead
+		if #command is `look around`
+			or #command is #enter
+			then
+				say
+					`The street ends here. <p>`
+					`{!!A golden plaque|_right_hand_plaque} hangs near {!!the gate|_right_hand_gate} to the {!!east|go east}. <p>`
+					`{!!Another plaque|_left_hand_plaque} hangs near {!!the gate|_left_hand_gate} to the {!!west|go west}. <p>`
+		if #command is `examine _left_hand_plaque`
+			`The plaque reads: "384 Mayfair Street"`
+		if #command is `examine _right_hand_plaque`
+			`The plaque reads: "385 Mayfair Street"`
+		if #command is `go east`
+			or #command is `use _right_hand_gate`
+			then
+				travel to _street_sinclair_front_lawn #interrupt
+		if #command is `go west`
+			or #command is `use _left_hand_gate`
+			or #command is `examine _left_hand_gate`
+			then
+				`The gate is locked.`
+		if #command is `go south`
+			travel to _street_2
+
+place named _street_sinclair_front_lawn looks like `{Front Garden|_street_sinclair_front_lawn}`
+	do
+		if #command is #enter
+			or #command is `look around`
+			then
+				do
+					if $_street_entered_lawn$ is false
+						do
+							set _street_entered_lawn to true
+							#clear
+							say `<p> You push open the gate and enter Dr. Sinclair's front garden. <p>`
+					if $_street_entered_lawn$ is true
+						`A gravel path leads from the {!!garden gate|_street_garden_gate} to the {!!west|go west} straight to {!!the front door|_street_front_door} of Dr. Sinclair's house to the {!!east|go east}.`
+		if #command is `examine _street_front_door`
+			`The door is slightly ajar.`
+		if #command is `examine _street_garden_gate`
+			`You've shut the gate securely behind you. But how could any mere physical barrier hold back that Horror?`
+		if #command is `go west`
+			`You can sense It's presence just beyond the gate. Terror freezes your blood as you attempt to move toward it. You don't have the strength.`
+		if #command is `use _street_front_door`
+			or #command is `go east`
+			then
+				travel to _house_front_hall
+
+place named _street_death looks like `You Have Died`
+	do
+		say `<p> Too long in the open, and without Dr. Sinclar's aid, the horrible shadow has consumed you. <p>`
+		say `(Refresh the page to play again)`

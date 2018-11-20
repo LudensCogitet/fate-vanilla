@@ -1,0 +1,73 @@
+thing named strange_cube is in cube_room looks like `{a small black cube|strange_cube}`
+	do
+		if #command is `examine strange_cube`
+			say `It's a small matte black {cube|strange_cube}, perfectly smooth and about 2 inches on a side`
+
+variable named cube_in_pedestal is false
+variable named time_cycle_length is 7
+variable named time_of_day is day
+
+place named pedestal_room looks like `{Pedestal Room|pedestal_room}`
+	do
+		if #command is `go north`
+			or #command is `go to the other room`
+			then
+				travel to cube_room
+
+		if #command is `go south`
+			if $cube_in_pedestal$ is true
+				travel to you_win
+
+		if #command is `look around`
+			or #command is #enter
+			then
+				say
+					`You are standing in a small circular room with bare white walls.`
+					if $cube_in_pedestal$ is false
+						`In the center of the room is a small, waist-high pedestal with a square depression in the center.`
+					if $cube_in_pedestal$ is true
+						`In the center of the room is a small, waist-high pedestal. A matte black {cube|strange_cube} sits in a square depression in the center.`
+					`To the north a doorway leads into another small room beyond.`
+
+		if #command is `strange_cube pedestal`
+			if $cube_in_pedestal$ is false
+				if #player has strange_cube
+					do
+						say
+							`You place the {cube|strange_cube} in the depression on the pedestal.`
+							`It slides in easily and clicks into place.`
+							set cube_in_pedestal to true
+							move strange_cube to #here
+
+place named cube_room looks like `{Alcove|cube_room}`
+	do
+		if #command is `go south`
+			travel to pedestal_room
+		if strange_cube is in #here
+			do
+				if #command is `look around`
+					or #command is #enter
+					then
+						say `A small black {cube|strange_cube} sits in an alcove in this otherwise featureless room.`
+
+				if #command is `use strange_cube`
+					do
+						say `You take the {cube|strange_cube}.`
+						move strange_cube to #player
+
+		if strange_cube is not in #here
+			if #command is `look around`
+				or #command is #enter
+				then
+					say `An empty alcove is the only notable feature of this otherwise featureless room.`
+
+
+place named you_win looks like `{You Win!|you_win}`
+	do
+		if #command is `look around`
+			or #command is #enter
+			then
+				say `YOU WIN!`
+
+		if #command is `go north`
+			travel to pedestal_room

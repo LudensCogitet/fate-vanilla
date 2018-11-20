@@ -1,0 +1,17 @@
+place named _intro
+	do
+		if #command is #enter
+			do
+				`A shadow hunts you. What had been but a vague and lurking fear, a scratching at the outer wall of the conscious mind,`
+				`became a sudden reality after that terrible ritual. It had been folly to participate, you knew that now. And perhaps it had`
+				`even been a trap set by Willem to destroy you, or to feed the thing? You could only guess, and there was no time now for guessing. <p>`
+				`Only flight. <p>`
+				`{Continue...|_intro_next 1}`
+		if #command is `_intro_next 1`
+			do
+				`The Thing is only a step behind, but somehow you've made it this far. Dusk has fallen and you stand in the very street where`
+				`Dr. Walter Sinclar lives; an expert in the occult and the only hope you have of freedom from your eldrich pursuer.`
+				`Still clutching his letter in your hand, you stare wildly about you for the proper house. <p>`
+				`{Continue...|_intro_next 2}`
+		if #command is `_intro_next 2`
+			travel to _street

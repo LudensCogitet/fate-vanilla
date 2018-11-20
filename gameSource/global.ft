@@ -1,0 +1,28 @@
+#settings
+	keyword list
+		use
+		examine
+		look around
+		{inventory|check inventory}
+		{north|go north}
+		{south|go south}
+		{east|go east}
+		{west|go west}
+	bad command response `That doesn't work.`
+
+#player is in _intro
+
+#anywhere
+	do
+		if #command is `check inventory`
+			list what #player has saying `You have #thing. <p>`
+
+thing named _sinclar_letter looks like `{!!a letter from Dr. Walter Sinclar|_sinclar_letter}` is in #player
+	do
+		if #command is `examine _sinclar_letter`
+			if #player has _sinclar_letter
+				do
+					`"Dear Mr. Smith <p>`
+					`I have learned of your plight. Make no mistake, you are in grave danger.`
+					`However, I believe I can help you. Come to my home on Mayfair Street at once, number 385. <p>`
+					`Do not delay."`

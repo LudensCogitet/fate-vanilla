@@ -1,0 +1,17 @@
+variable named var is null
+variable named counter is 0
+
+#settings
+	keyword list
+		go now
+
+#player is in _room
+
+place named _room looks like `A room`
+	do
+		if $var$ is null
+			set var to false
+		if $var$ is false
+			do
+				set counter to $counter$ plus 1
+				say $counter$
