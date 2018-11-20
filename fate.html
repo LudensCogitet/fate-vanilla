@@ -1,0 +1,225 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
+	<head>
+		<style>
+			html {
+				width: 100vw;
+				height: 100%;
+				background-color: black;
+				color: lightgray;
+				font-size: 1.2em;
+			}
+			a {
+				display: inline-block;
+				text-decoration: none;
+				color: lightgray;
+			}
+
+			a:hover {
+				text-align: underline;
+				font-weight: bold;
+			}
+
+			.highlight {
+				text-decoration: underline;
+				font-weight: bold;
+			}
+
+			.wrapper {
+				margin: 0 auto;
+				max-width: 800px;
+			}
+
+			#console {
+				font-family: 'Courier', sans-serif;
+				height: 60vh;
+				overflow: auto;
+				padding: 10px;
+				border: 1px solid lightgray;
+			}
+
+			#command {
+				border: 1px solid lightgray;
+				margin-top: 10px;
+			}
+
+			#verbs {
+				margin-top: 5px;
+				text-align: center;
+			}
+		</style>
+		<script src="./fate.js"></script>
+		<script src="./defaultWorld.js"></script>
+		<script>
+			var FATE = new Fate();
+			var SETTINGS;
+			var COMMAND_BUFFER = [];
+			var COMMAND_DISPLAY;
+			var GAME_CONSOLE;
+			var VERBS;
+			var CURRENT_LOCATION;
+
+			var TAGS = ['<p>', '<br>'];
+
+			function aliasWord(word) {
+				var aliasedParts = word.split('|');
+
+				if(aliasedParts.length < 2) {
+					return {display: word, logical: word, highlight: false};
+				}
+
+				// cut off the `{}`
+				var display = aliasedParts[0].slice(1);
+				var logical = aliasedParts[1].slice(0, -1);
+				var highlight = false;
+
+				if(display.substring(0, 2) === '!!') {
+					display = display.slice(2);
+					highlight = true;
+				}
+
+				return { display: display, logical: logical, highlight: highlight };
+			}
+
+			function addLink(chunk) {
+				let aliased = aliasWord(chunk);
+				let linkEl = document.createElement('a');
+				linkEl.href = 'javascript:INPUT("'+aliased.logical+'", "'+aliased.display+'")';
+				linkEl.innerText = aliased.display;
+				if(aliased.highlight) {
+					linkEl.className = 'highlight';
+				}
+
+				GAME_CONSOLE.appendChild(linkEl);
+				GAME_CONSOLE.innerHTML += " ";
+			}
+
+			function addButton(chunk) {
+				let aliased = aliasWord(chunk);
+
+				let buttonEl = document.createElement('button');
+				buttonEl.addEventListener('click', function(event) { event.preventDefault(); INPUT(aliased.logical, aliased.display); });
+				buttonEl.innerText = aliased.display;
+
+				VERBS.appendChild(buttonEl);
+			}
+
+			function processCommand(response) {
+				GAME_CONSOLE.innerHTML += '<p>' + COMMAND_DISPLAY.innerHTML;
+
+				COMMAND_BUFFER.forEach(x => {
+					let commandDisplayed = COMMAND_DISPLAY.querySelector("[data-command='"+x+"']");
+					if(commandDisplayed) {
+						commandDisplayed.remove();
+					}
+				});
+				COMMAND_BUFFER = [];
+
+				if(!response.response) {
+					return;
+				}
+
+				if(response.clear || CURRENT_LOCATION !== response.currentLocation.name) {
+					GAME_CONSOLE.innerHTML = '';
+					document.body.scrollTop = 0;
+				}
+
+				CURRENT_LOCATION = response.currentLocation.name;
+
+				var matches = response.response.match(/({.*?})/g);
+				var processed = response.response.replace(/\\"/g, '"');
+
+				if(matches) {
+					for(var i = 0; i < matches.length; i++) {
+						processed = processed.replace(matches[i], '{'+i+'}');
+					}
+				}
+
+				processed = processed.split(' ');
+
+				if(!response.clear) {
+					GAME_CONSOLE.innerHTML += '<p>';
+				}
+
+				processed.forEach(x => {
+					if(TAGS.indexOf(x) > -1) {
+						GAME_CONSOLE.innerHTML += x;
+						return;
+					}
+
+					var match = x.match(/{([0-9]+)}/);
+					if(!match) {
+						return addLink(x);
+					} else {
+						return addLink(matches[+match[1]]);
+					}
+				});
+
+				GAME_CONSOLE.scrollTop = GAME_CONSOLE.scrollHeight;
+			}
+
+			function LOAD() {
+				SETTINGS = FATE.load(document.getElementById('worldInput').value || DEFAULT_WORLD);
+				document.getElementById('loader').style.display = 'none';
+
+				GAME_CONSOLE = document.getElementById('console');
+				COMMAND_DISPLAY = document.getElementById('command');
+				VERBS = document.getElementById('verbs');
+
+				processCommand(FATE.start());
+
+				SETTINGS.keywords.forEach(keyword => {
+					addButton(keyword.keyword);
+				});
+			}
+
+			function INPUT(logical, display) {
+				if(COMMAND_BUFFER.length >= 2) {
+					COMMAND_BUFFER.forEach(x => {
+						let commandDisplayed = COMMAND_DISPLAY.querySelector("[data-command='"+x+"']");
+						if(commandDisplayed) {
+							commandDisplayed.remove();
+						}
+					});
+					COMMAND_BUFFER = [];
+				}
+
+				let verbIndex = COMMAND_BUFFER.indexOf(logical);
+				if(verbIndex > -1) {
+					COMMAND_DISPLAY.querySelector("[data-command='"+logical+"'").remove();
+					console.log(COMMAND_BUFFER);
+					COMMAND_BUFFER.splice(verbIndex, 1);
+					console.log(COMMAND_BUFFER);
+				} else {
+					COMMAND_BUFFER.push(logical);
+					var newCommandEl = document.createElement('span');
+					newCommandEl.dataset.command = logical;
+					newCommandEl.innerText = display;
+					newCommandEl.innerHTML += " ";
+					COMMAND_DISPLAY.appendChild(newCommandEl);
+				}
+
+				let joinedCommand = COMMAND_BUFFER.join(' ');
+
+				if((joinedCommand.match(/ /g) || []).length < 1) {
+					return;
+				}
+
+				processCommand(FATE.move(joinedCommand));
+
+				document.body.scrollTop = document.body.scrollHeight;
+			}
+		</script>
+	</head>
+	<body>
+		<div id="loader">
+			<textarea id="worldInput"></textarea>
+			<button onclick="LOAD()">load</button>
+		</div>
+		<div class="wrapper">
+			<div id="console"></div>
+			<div id="command"><span>?> </span></div>
+			<div id="verbs"></div>
+		</div>
+	</body>
+</html>
