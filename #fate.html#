@@ -105,7 +105,8 @@
 			}
 
 			function processCommand(response) {
-				GAME_CONSOLE.innerHTML += '<p>' + '<b>' + COMMAND_DISPLAY.innerHTML + '</b>';
+							 GAME_CONSOLE.innerHTML += '<p>' +
+							 >COMMAND_DISPLAY.innerHTML;
 
 				COMMAND_BUFFER.forEach(x => {
 					let commandDisplayed = COMMAND_DISPLAY.querySelector("[data-command='"+x+"']");

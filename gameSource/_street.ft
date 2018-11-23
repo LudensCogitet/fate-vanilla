@@ -109,7 +109,7 @@ place named _street_sinclair_front_lawn looks like `{Front Garden|_street_sincla
 							#clear
 							say `<p> You push open the gate and enter Dr. Sinclair's front garden. <p>`
 					if $_street_entered_lawn$ is true
-						`A gravel path leads from the {!!garden gate|_street_garden_gate} to the {!!west|go west} straight to {!!the front door|_street_front_door} of Dr. Sinclair's house to the {!!east|go east}.`
+						`A gravel path leads from the {!!garden gate|_street_garden_gate} to the {!!west|go west} straight to {!!the front door|_street_front_door} of Dr. Sinclair's house to the {!!east.|go east} The path then curves around the {!!north|go north} side of the house`
 		if #command is `examine _street_front_door`
 			`The door is slightly ajar.`
 		if #command is `examine _street_garden_gate`
@@ -120,6 +120,8 @@ place named _street_sinclair_front_lawn looks like `{Front Garden|_street_sincla
 			or #command is `go east`
 			then
 				travel to _house_front_hall
+		if #command is `go north`
+			travel to _house_garden
 
 place named _street_death looks like `You Have Died`
 	do
