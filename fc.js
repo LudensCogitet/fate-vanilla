@@ -518,7 +518,7 @@ function serializeWorldObject(compiled) {
 
 	if(!destinationPath) {
 		let dateNow = new Date();
-		destinationPath = `./fateWorld_${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}.ftw`;
+		destinationPath = `./fateWorld_${dateNow.getFullYear()}-${dateNow.getMonth()+1}-${dateNow.getDate()}.ftw`;
 	}
 
 	fs.writeFileSync(destinationPath, serializeWorldObject(compiled));

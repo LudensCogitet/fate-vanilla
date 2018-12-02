@@ -7,7 +7,7 @@ thing named _hall_note looks like `{!!a hastily scrawled note|_hall_note}` is in
 				`But rest assured, though the heavens may fall into the depths of the abyss and the rising sun burn the sickly moon, all is not lost. <p>`
 				`Follow me."`
 		if #command is `use _hall_note`
-			if #player does not have _hall_note
+			if _hall_note is in #here
 				do
 					say `You take the note.`
 					move _hall_note to #player
@@ -108,11 +108,39 @@ place named _house_laboratory looks like `To Be Continued...`
 	do
 		say `You enter the shadowy laboratory of Dr. Sinclair...`
 
+thing named _house_blue_flower looks like `{!!an iridescent blue flower|_house_blue_flower}` is in _house_garden
+	do
+		if #command is `examine _house_blue_flower`
+			say
+				`This {flower|_house_blue_flower} glows with a strange blue light. The petals seem to twist and warp as if seen through a desert haze.`
+		if #command is `use _house_blue_flower`
+			if _house_blue_flower is in #here
+				do
+					say `You take the {!!flower.|_house_blue_flower}`
+					move _house_blue_flower to #player
+
+variable named _house_flower_beds_examined is false
+
 place named _house_garden looks like `The back garden`
 	do
 		if #command is #enter
-			say
-				`This is the back garden of doctor Sinclar's house. <p>`
-				`A gravel path leads around the side of the house to the {!!south.|go south}`
+			or #command is `look around`
+			then
+				do
+					say
+						`This is the back garden of doctor Sinclar's house. <p>`
+						`A {staggering array of flowers,|_house_flower_beds} most of which you don't recognize, fill the {orderly rows of beds|_house_flower_beds} that line a stone path here. <p>`
+						`At the end of the path a park bench faces the house. <p>`
+						`A gravel path leads around the side of the house to the {!!south.|go south}`
+		if #command is `examine _house_blue_flower_found`
+			if _house_blue_flower is in #here
+				say `<p> A {!!strange blue flower|_house_blue_flower} nestled among the others catches your eye. <p>`
 		if #command is `go south`
 			travel to _street_sinclair_front_lawn
+		if #command is `examine _house_flower_beds`
+			do
+				say `Red and yellow flowers, purple and {blue flowers.|_house_blue_flower_found} Thin needle-like petals, broad flat petals. A cacophony of colors and shapes assaults your senses.`
+				if $_house_flower_beds_examined$ is false
+					do
+						set _house_flower_beds_examined to true
+						say `Dr. Sinclar clearly has exotic taste in plantings. Yet you can't help feeling many of these are more than exotic. They seem alien, and unsettling.`
